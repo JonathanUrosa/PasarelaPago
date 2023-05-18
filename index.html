@@ -1,202 +1,40 @@
 <!DOCTYPE html>
 <html lang="en-us">
-
-<head>
+  <head>
+    <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>AI Explorer</title>
-    <style>
-        * {
-            padding: 0;
-            margin: 0;
-        }
-
-        body {
-            height: 100%;
-            width: 100%;
-            text-align: center;
-        }
-
-        #unity-canvas {
-            position: absolute;
-            left: 0px;
-            top: 0px;
-            width: 100%;
-            height: 100%;
-            background-color: #000000;
-        }
-
-        #unity-loading-bar {
-            position: absolute;
-            left: 37%;
-            top: 55%;
-            width: 25%;
-            height: 2.5%;
-            background-color: #000000;
-            border: 3px solid #FFFFFF;
-            border-radius: 10px;
-        }
-
-        #unity-logo {
-            position: absolute;
-            left: 30%;
-            top: 30%;
-            width: 40%;
-            height: 10%;
-            transition: ease all 400ms;
-        }
-
-        #unity-logo img{
-            width: 27%;
-        }
-
-        #unity-progress-bar {
-            position: absolute;
-            left: 0%;
-            top: 0%;
-            width: 1%;
-            height: 100%;
-            background-color: #FFFFFF;
-            border-radius: 10px;
-            transition: 400ms linear;
-        }
-
-        @media screen and (max-width:1100px
-        ) {
-            #unity-logo {
-                position: absolute;
-                left: 38%;
-                top: 25%;
-                width: 25%;
-                height: 8%;
-            }
-
-            #unity-logo img{
-                width: 50%;
-            }
-
-        }
-
-        @media screen and (max-height:650px 
-        ) {
-            #unity-logo {
-                position: absolute;
-                left: 38%;
-                top: 25%;
-                width: 25%;
-                height: 8%;
-            }
-
-            #unity-logo img{
-                width: 50%;
-            }
-
-        }
-
-
-        @media screen and (max-height:350px 
-        ) {
-            #unity-logo {
-                position: absolute;
-                left: 38%;
-                top: 30%;
-                width: 25%;
-                height: 8%;
-            }
-
-            #unity-logo img{
-                width: 30%;
-            }
-
-        }
-
-
-        .parpadea {
-  
-            animation-name: parpadeo;
-            animation-duration: 2.5s;
-            animation-timing-function: linear;
-            animation-iteration-count: infinite;
-          
-            -webkit-animation-name:parpadeo;
-            -webkit-animation-duration: 2.5s;
-            -webkit-animation-timing-function: linear;
-            -webkit-animation-iteration-count: infinite;
-          }
-
-        @-moz-keyframes parpadeo{  
-            0% { opacity: 1.0; }
-            50% { opacity: 0.0; }
-            100% { opacity: 1.0; }
-          }
-          
-          @-webkit-keyframes parpadeo {  
-            0% { opacity: 1.0; }
-            50% { opacity: 0.0; }
-             100% { opacity: 1.0; }
-          }
-          
-          @keyframes parpadeo {  
-            0% { opacity: 1.0; }
-             50% { opacity: 0.0; }
-            100% { opacity: 1.0; }
-          }
-       
-    </style>
-</head>
-
-<body>
-    <canvas id="unity-canvas"></canvas>
-    <div id="unity-logo"><img src="Logo Loading 01.gif"></div>
-    <div id="unity-loading-bar">
-        <div id="unity-progress-bar">
-        </div>
-    </div>
-    <script src="Build/2023_05_18.loader.js"></script>
+    <title>Unity WebGL Player | proyecto testeo</title>
+  </head>
+  <body style="text-align: center; padding: 0; border: 0; margin: 0;">
+    <canvas id="unity-canvas" width=1280 height=720 style="width: 1280px; height: 720px; background: #231F20"></canvas>
+    <script src="Build/build webgl.loader.js"></script>
     <script>
-    const maxPixelRatioMobile = 2.0;
-    const maxPixelRatioDesktop = 1.5;
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        // Mobile device style: fill the whole browser client area with the game canvas:
+        var meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+        document.getElementsByTagName('head')[0].appendChild(meta);
 
-    var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    var maxDevicePixelRatio = isMobile? maxPixelRatioMobile: maxPixelRatioDesktop;
-    var pixelRatio = Math.min(window.devicePixelRatio, maxDevicePixelRatio);
+        var canvas = document.querySelector("#unity-canvas");
+        canvas.style.width = "100%";
+        canvas.style.height = "100%";
+        canvas.style.position = "fixed";
 
-    var buildUrl = "Build";
-    var loaderUrl = buildUrl + "/2023_05_18.loader.js";
-    var config = {
-      dataUrl: buildUrl + "/2023_05_18.data",
-      frameworkUrl: buildUrl + "/2023_05_18.framework.js",
-      codeUrl: buildUrl + "/2023_05_18.wasm",
-      streamingAssetsUrl: "StreamingAssets",
-      companyName: "Nagare Games",
-      productName: "AI Explorer",
-      productVersion: "0.1",
-      devicePixelRatio: pixelRatio
-    };
+        document.body.style.textAlign = "left";
+      }
 
-    var canvas = document.querySelector("#unity-canvas");
-    var loadingBar = document.querySelector("#unity-loading-bar");
-    var progressBar = document.querySelector("#unity-progress-bar");
-    var UnityLogo = document.querySelector("#unity-logo");
-        
-
-    var unityGame; // This can be used to access the application with .SendMessage() commands
-    var script = document.createElement("script");
-    script.src = loaderUrl;
-    script.onload = function() {
-      createUnityInstance(canvas, config, function(progress) {
-        progressBar.style.width = 100 * progress + "%";
-      }).then(function(unityInstance) {
-        unityGame = unityInstance;
-          loadingBar.style.display = "none";
-          UnityLogo.style.display = "none";
-
-      }).catch(function(message) {
-        alert(message);
+      createUnityInstance(document.querySelector("#unity-canvas"), {
+        dataUrl: "Build/build webgl.data",
+        frameworkUrl: "Build/build webgl.framework.js",
+        codeUrl: "Build/build webgl.wasm",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "DefaultCompany",
+        productName: "proyecto testeo",
+        productVersion: "0.1",
+        // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
+        // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
       });
-    };
-    document.body.appendChild(script);
     </script>
-</body>
-
+  </body>
 </html>
